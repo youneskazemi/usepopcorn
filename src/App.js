@@ -14,7 +14,7 @@ import MovieDetails from "./components/templates/MovieDetails";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
-  const [query, setQuery] = useState("fight club");
+  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const searchHandler = async (e) => {
@@ -39,12 +39,16 @@ export default function App() {
   };
 
   useEffect(() => {
+    const abortController = new AbortController();
     const fetchMovies = async () => {
       try {
         setLoading(true);
         setError("");
         const res = await fetch(
-          `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMBDB_API_KEY}&s=${query}`
+          `https://www.omdbapi.com/?apikey=${process.env.REACT_APP_OMBDB_API_KEY}&s=${query}`,
+          {
+            signal: abortController.signal,
+          }
         );
 
         if (!res.ok) throw new Error(`Error fetching movies`);
@@ -54,8 +58,9 @@ export default function App() {
         if (data.Response === "False") throw new Error("No movies found!");
 
         setMovies(data.Search);
+        setError("");
       } catch (error) {
-        setError(error.message);
+        if (error.name !== "AbortError") setError(error.message);
       } finally {
         setLoading(false);
       }
@@ -66,6 +71,8 @@ export default function App() {
       return;
     }
     fetchMovies();
+
+    return () => abortController.abort();
   }, [query]);
 
   return (
