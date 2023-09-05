@@ -7,10 +7,12 @@ export default function MovieDetails({
   selectedId,
   onCloseMovie,
   onAddWatched,
+  watched,
 }) {
   const [movie, setMovie] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [rating, setRating] = useState(null);
 
   const {
     Title: title,
@@ -25,6 +27,8 @@ export default function MovieDetails({
     imdbRating,
   } = movie || {};
 
+  const isExist = watched.find((movie) => movie.imdbId === selectedId);
+
   const handleAdd = () => {
     const newWatchedMovie = {
       imdbId: selectedId,
@@ -33,6 +37,7 @@ export default function MovieDetails({
       poster,
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
+      userRating: rating,
     };
     onAddWatched(newWatchedMovie);
   };
@@ -49,7 +54,6 @@ export default function MovieDetails({
         if (!res.ok) throw new Error("Couldn't fetch the movie details!");
         const data = await res.json();
 
-        console.log(data);
         if (data.Response === "False")
           throw new Error("Movie details was not found!");
         setMovie(data);
@@ -88,11 +92,25 @@ export default function MovieDetails({
           </header>
           <section>
             <div className="rating">
-              <StarRating maxRating={10} size={24} />
-              <button className="btn-add" onClick={handleAdd}>
-                + Add to List
-              </button>
+              {!isExist ? (
+                <>
+                  {" "}
+                  <StarRating
+                    maxRating={10}
+                    size={24}
+                    onSetRating={setRating}
+                  />
+                  {rating && (
+                    <button className="btn-add" onClick={handleAdd}>
+                      + Add to List
+                    </button>
+                  )}
+                </>
+              ) : (
+                <p>You rated this movie {isExist.userRating}⭐</p>
+              )}
             </div>
+
             <p>
               <em>{plot}</em>
             </p>
