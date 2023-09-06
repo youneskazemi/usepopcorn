@@ -19,11 +19,11 @@ export default function WatchedMovie({
         </p>
         <p>
           <span>🌟</span>
-          <span>{movie.userRating.toFixed(2)}</span>
+          <span>{movie.userRating}</span>
         </p>
         <p>
           <span>⏳</span>
-          <span>{movie.runtime.toFixed(2)} min</span>
+          <span>{movie.runtime} min</span>
         </p>
         <button
           className="btn-delete"
