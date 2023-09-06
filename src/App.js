@@ -22,10 +22,6 @@ export default function App() {
     return JSON.parse(localStorage.getItem("watched"));
   });
 
-  const searchHandler = async (e) => {
-    setQuery(e.target.value);
-  };
-
   const onSelectMovie = (id) => {
     setSelectedId((selected) => (selected === id ? null : id));
   };
@@ -86,7 +82,7 @@ export default function App() {
   return (
     <>
       <Navbar>
-        <Search query={query} searchHandler={searchHandler} />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
 
@@ -113,6 +109,7 @@ export default function App() {
               <WatchedMoviesList
                 watched={watched}
                 onRemoveWatched={handleRemoveWatched}
+                onSelectMovie={onSelectMovie}
               />
             </>
           )}
